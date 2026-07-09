@@ -4,26 +4,41 @@ const helmet = require("helmet");
 const compression = require("compression");
 const morgan = require("morgan");
 
+const apiRoutes = require("./routes");
+const {
+  notFoundHandler,
+  errorHandler,
+} = require("./middleware/errorHandler");
+
 const app = express();
 
-// =========================
-// Middleware
-// =========================
+/*
+|--------------------------------------------------------------------------
+| Global Middleware
+|--------------------------------------------------------------------------
+*/
+
 app.use(helmet());
 app.use(cors());
 app.use(compression());
 app.use(express.json());
 app.use(morgan("combined"));
 
-// =========================
-// Health Check
-// =========================
-app.get("/health", (req, res) => {
-  res.status(200).json({
-    status: "UP",
-    message: "Hospital Management API is running",
-    timestamp: new Date().toISOString(),
-  });
-});
+/*
+|--------------------------------------------------------------------------
+| API Routes
+|--------------------------------------------------------------------------
+*/
+
+app.use("/api/v1", apiRoutes);
+
+/*
+|--------------------------------------------------------------------------
+| Error Handling
+|--------------------------------------------------------------------------
+*/
+
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 module.exports = app;
