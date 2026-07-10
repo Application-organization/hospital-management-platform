@@ -1,5 +1,5 @@
 class ApiResponse {
-  static success(res, message, data = {}, statusCode = 200) {
+  static success(res, message, data = null, statusCode = 200) {
     return res.status(statusCode).json({
       success: true,
       message,
@@ -7,10 +7,11 @@ class ApiResponse {
     });
   }
 
-  static error(res, message, statusCode = 500) {
+  static error(res, message, statusCode = 500, data = null) {
     return res.status(statusCode).json({
       success: false,
       message,
+      ...(data && { data }),
     });
   }
 }

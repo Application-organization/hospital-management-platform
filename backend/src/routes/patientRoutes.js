@@ -2,7 +2,13 @@ const express = require("express");
 
 const authenticate = require("../middleware/authMiddleware");
 const authorize = require("../middleware/authorize");
+const validate = require("../middleware/validate");
+
 const patientController = require("../controllers/patientController");
+
+const {
+  createPatientSchema,
+} = require("../validators/patientValidator");
 
 const router = express.Router();
 
@@ -20,6 +26,7 @@ const router = express.Router();
 */
 router.post(
   "/",
+  validate(createPatientSchema),
   authenticate,
   authorize("admin"),
   patientController.createPatient
