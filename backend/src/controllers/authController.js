@@ -16,11 +16,18 @@ const register = async (req, res, next) => {
   }
 };
 
-const login = async (req, res) => {
-  ApiResponse.success(
-    res,
-    "Login endpoint is under development"
-  );
+const login = async (req, res, next) => {
+  try {
+    const result = await authService.loginUser(req.body);
+
+    return ApiResponse.success(
+      res,
+      result.message,
+      result.data
+    );
+  } catch (error) {
+    next(error);
+  }
 };
 
 module.exports = {

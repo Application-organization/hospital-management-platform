@@ -1,6 +1,8 @@
 const express = require("express");
-const ApiResponse = require("../utils/ApiResponse");
+
 const authRoutes = require("./authRoutes");
+const userRoutes = require("./userRoutes");
+const ApiResponse = require("../utils/ApiResponse");
 
 const router = express.Router();
 
@@ -11,18 +13,30 @@ const router = express.Router();
 */
 
 router.get("/health", (req, res) => {
-  ApiResponse.success(res, "Hospital Management API is running", {
-    status: "UP",
-    timestamp: new Date().toISOString(),
-  });
+  return ApiResponse.success(
+    res,
+    "Hospital Management API is running",
+    {
+      status: "UP",
+      timestamp: new Date(),
+    }
+  );
 });
 
 /*
 |--------------------------------------------------------------------------
-| Authentication
+| Authentication Routes
 |--------------------------------------------------------------------------
 */
 
 router.use("/auth", authRoutes);
+
+/*
+|--------------------------------------------------------------------------
+| User Routes
+|--------------------------------------------------------------------------
+*/
+
+router.use("/users", userRoutes);
 
 module.exports = router;

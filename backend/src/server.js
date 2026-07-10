@@ -1,4 +1,4 @@
-const config = require("./config/env");
+const env = require("./config/env");
 const logger = require("./config/logger");
 const connectDatabase = require("./config/database");
 const app = require("./app");
@@ -6,12 +6,12 @@ const app = require("./app");
 const startServer = async () => {
   await connectDatabase();
 
-  const server = app.listen(config.port, () => {
+  const server = app.listen(env.app.port, () => {
     logger.info("========================================");
-    logger.info(`${config.appName} started`);
-    logger.info(`Environment : ${config.nodeEnv}`);
-    logger.info(`Port        : ${config.port}`);
-    logger.info(`API Version : ${config.apiVersion}`);
+    logger.info(`${env.app.name} started`);
+    logger.info(`Environment : ${env.app.env}`);
+    logger.info(`Port        : ${env.app.port}`);
+    logger.info(`API Version : ${env.app.version}`);
     logger.info("========================================");
   });
 
