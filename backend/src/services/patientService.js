@@ -1,38 +1,86 @@
 const Patient = require("../models/Patient");
 const AppError = require("../errors/AppError");
 
-const createPatient = async (patientData) => {
-  const existingPatient = await Patient.findOne({
-    email: patientData.email,
-  });
+class PatientService {
+  /**
+   * Create Patient
+   */
+  async createPatient(patientData) {
+    const existingPatient = await Patient.findOne({
+      email: patientData.email,
+    });
 
-  if (existingPatient) {
-    throw new AppError("Patient with this email already exists", 409);
+    if (existingPatient) {
+      throw new AppError("Patient with this email already exists", 409);
+    }
+
+    return await Patient.create(patientData);
   }
 
-  const patient = await Patient.create(patientData);
-
-  return patient;
-};
-
-const getAllPatients = async () => {
-  return await Patient.find().sort({
-    createdAt: -1,
-  });
-};
-
-const getPatientById = async (patientId) => {
-  const patient = await Patient.findById(patientId);
-
-  if (!patient) {
-    throw new AppError("Patient not found", 404);
+  /**
+   * Get All Patients
+   */
+  async getAllPatients() {
+    return await Patient.find({ isActive: true }).sort({
+      createdAt: -1,
+    });
   }
 
-  return patient;
-};
+  /**
+   * Get Patient By ID
+   */
+  async getPatientById(id) {
+    const patient = await Patient.findById(id);
 
-module.exports = {
-  createPatient,
-  getAllPatients,
-  getPatientById,
-};
+    if (!patient || !patient.isActive) {
+      throw new AppError("Patient not found", 404);
+    }
+
+    return patient;
+  }
+
+  /**
+   * Update Patient
+   */
+  async updatePatient(id, updateData) {
+    const patient = await Patient.findById(id);
+
+    if (!patient || !patient.isActive) {
+      throw new AppError("Patient not found", 404);
+    }
+
+    if (updateData.email && updateData.email !== patient.email) {
+      const emailExists = await Patient.findOne({
+        email: updateData.email,
+      });
+
+      if (emailExists) {
+        throw new AppError("Patient with this email already exists", 409);
+      }
+    }
+
+    return await Patient.findByIdAndUpdate(id, updateData, {
+      new: true,
+      runValidators: true,
+    });
+  }
+
+  /**
+   * Soft Delete Patient
+   */
+  async deletePatient(id) {
+    const patient = await Patient.findById(id);
+
+    if (!patient || !patient.isActive) {
+      throw new AppError("Patient not found", 404);
+    }
+
+    patient.isActive = false;
+
+    await patient.save();
+
+    return patient;
+  }
+}
+
+module.exports = new PatientService();

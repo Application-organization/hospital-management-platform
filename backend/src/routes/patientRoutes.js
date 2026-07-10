@@ -8,20 +8,14 @@ const patientController = require("../controllers/patientController");
 
 const {
   createPatientSchema,
+  updatePatientSchema,
 } = require("../validators/patientValidator");
 
 const router = express.Router();
 
 /*
 |--------------------------------------------------------------------------
-| Patient Routes
-|--------------------------------------------------------------------------
-*/
-
-/*
-|--------------------------------------------------------------------------
 | Create Patient
-| Roles: admin
 |--------------------------------------------------------------------------
 */
 router.post(
@@ -35,7 +29,6 @@ router.post(
 /*
 |--------------------------------------------------------------------------
 | Get All Patients
-| Roles: admin, doctor
 |--------------------------------------------------------------------------
 */
 router.get(
@@ -48,7 +41,6 @@ router.get(
 /*
 |--------------------------------------------------------------------------
 | Get Patient By ID
-| Roles: admin, doctor
 |--------------------------------------------------------------------------
 */
 router.get(
@@ -56,6 +48,31 @@ router.get(
   authenticate,
   authorize("admin", "doctor"),
   patientController.getPatientById
+);
+
+/*
+|--------------------------------------------------------------------------
+| Update Patient
+|--------------------------------------------------------------------------
+*/
+router.put(
+  "/:id",
+  validate(updatePatientSchema),
+  authenticate,
+  authorize("admin"),
+  patientController.updatePatient
+);
+
+/*
+|--------------------------------------------------------------------------
+| Soft Delete Patient
+|--------------------------------------------------------------------------
+*/
+router.delete(
+  "/:id",
+  authenticate,
+  authorize("admin"),
+  patientController.deletePatient
 );
 
 module.exports = router;
