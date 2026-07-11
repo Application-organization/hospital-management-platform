@@ -1,19 +1,20 @@
 const Appointment = require("../models/Appointment");
 const Patient = require("../models/Patient");
 const Doctor = require("../models/Doctor");
+const ApiError = require("../utils/ApiError");
 
 // Create Appointment
 const createAppointment = async (appointmentData) => {
     const patient = await Patient.findById(appointmentData.patient);
 
     if (!patient) {
-        throw new Error("Patient not found");
+        throw new ApiError(404, "Patient not found");
     }
 
     const doctor = await Doctor.findById(appointmentData.doctor);
 
     if (!doctor) {
-        throw new Error("Doctor not found");
+        throw new ApiError(404, "Doctor not found");
     }
 
     const appointment = await Appointment.create(appointmentData);
@@ -33,9 +34,15 @@ const getAllAppointments = async () => {
 
 // Get Appointment By ID
 const getAppointmentById = async (id) => {
-    return await Appointment.findById(id)
+    const appointment = await Appointment.findById(id)
         .populate("patient")
         .populate("doctor");
+
+    if (!appointment) {
+        throw new ApiError(404, "Appointment not found");
+    }
+
+    return appointment;
 };
 
 // Update Appointment
@@ -44,7 +51,7 @@ const updateAppointment = async (id, appointmentData) => {
         const patient = await Patient.findById(appointmentData.patient);
 
         if (!patient) {
-            throw new Error("Patient not found");
+            throw new ApiError(404, "Patient not found");
         }
     }
 
@@ -52,21 +59,37 @@ const updateAppointment = async (id, appointmentData) => {
         const doctor = await Doctor.findById(appointmentData.doctor);
 
         if (!doctor) {
-            throw new Error("Doctor not found");
+            throw new ApiError(404, "Doctor not found");
         }
     }
 
-    return await Appointment.findByIdAndUpdate(id, appointmentData, {
-        new: true,
-        runValidators: true,
-    })
+    const appointment = await Appointment.findByIdAndUpdate(
+        id,
+        appointmentData,
+        {
+            new: true,
+            runValidators: true,
+        }
+    )
         .populate("patient")
         .populate("doctor");
+
+    if (!appointment) {
+        throw new ApiError(404, "Appointment not found");
+    }
+
+    return appointment;
 };
 
 // Delete Appointment
 const deleteAppointment = async (id) => {
-    return await Appointment.findByIdAndDelete(id);
+    const appointment = await Appointment.findByIdAndDelete(id);
+
+    if (!appointment) {
+        throw new ApiError(404, "Appointment not found");
+    }
+
+    return appointment;
 };
 
 module.exports = {

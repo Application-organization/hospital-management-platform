@@ -1,115 +1,75 @@
 const doctorService = require("../services/doctorService");
+const ApiResponse = require("../utils/ApiResponse");
+const asyncHandler = require("../middleware/asyncHandler");
 
-// Create Doctor
-const createDoctor = async (req, res) => {
-    try {
-        const doctor = await doctorService.createDoctor(req.body);
+/**
+ * Create Doctor
+ */
+const createDoctor = asyncHandler(async (req, res) => {
+    const doctor = await doctorService.createDoctor(req.body);
 
-        res.status(201).json({
-            success: true,
-            message: "Doctor created successfully",
-            data: doctor,
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: error.message,
-        });
-    }
-};
+    return ApiResponse.success(
+        res,
+        "Doctor created successfully",
+        doctor,
+        201
+    );
+});
 
-// Get All Doctors
-const getAllDoctors = async (req, res) => {
-    try {
-        const doctors = await doctorService.getAllDoctors();
+/**
+ * Get All Doctors
+ */
+const getAllDoctors = asyncHandler(async (req, res) => {
+    const doctors = await doctorService.getAllDoctors();
 
-        res.status(200).json({
-            success: true,
-            message: "Doctors retrieved successfully",
-            data: doctors,
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: error.message,
-        });
-    }
-};
+    return ApiResponse.success(
+        res,
+        "Doctors retrieved successfully",
+        doctors
+    );
+});
 
-// Get Doctor By ID
-const getDoctorById = async (req, res) => {
-    try {
-        const doctor = await doctorService.getDoctorById(req.params.id);
+/**
+ * Get Doctor By ID
+ */
+const getDoctorById = asyncHandler(async (req, res) => {
+    const doctor = await doctorService.getDoctorById(req.params.id);
 
-        if (!doctor) {
-            return res.status(404).json({
-                success: false,
-                message: "Doctor not found",
-            });
-        }
+    return ApiResponse.success(
+        res,
+        "Doctor retrieved successfully",
+        doctor
+    );
+});
 
-        res.status(200).json({
-            success: true,
-            message: "Doctor retrieved successfully",
-            data: doctor,
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: error.message,
-        });
-    }
-};
+/**
+ * Update Doctor
+ */
+const updateDoctor = asyncHandler(async (req, res) => {
+    const doctor = await doctorService.updateDoctor(
+        req.params.id,
+        req.body
+    );
 
-// Update Doctor
-const updateDoctor = async (req, res) => {
-    try {
-        const doctor = await doctorService.updateDoctor(req.params.id, req.body);
+    return ApiResponse.success(
+        res,
+        "Doctor updated successfully",
+        doctor
+    );
+});
 
-        if (!doctor) {
-            return res.status(404).json({
-                success: false,
-                message: "Doctor not found",
-            });
-        }
+/**
+ * Delete Doctor
+ */
+const deleteDoctor = asyncHandler(async (req, res) => {
+    await doctorService.deleteDoctor(req.params.id);
 
-        res.status(200).json({
-            success: true,
-            message: "Doctor updated successfully",
-            data: doctor,
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: error.message,
-        });
-    }
-};
-
-// Delete Doctor
-const deleteDoctor = async (req, res) => {
-    try {
-        const doctor = await doctorService.deleteDoctor(req.params.id);
-
-        if (!doctor) {
-            return res.status(404).json({
-                success: false,
-                message: "Doctor not found",
-            });
-        }
-
-        res.status(200).json({
-            success: true,
-            message: "Doctor deleted successfully",
-            data: null,
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: error.message,
-        });
-    }
-};
+    return ApiResponse.success(
+        res,
+        "Doctor deleted successfully",
+        null
+    );
+});
 
 module.exports = {
     createDoctor,

@@ -1,27 +1,32 @@
 const ApiResponse = require("../utils/ApiResponse");
+const asyncHandler = require("../middleware/asyncHandler");
+const userService = require("../services/userService");
 
-const getProfile = async (req, res) => {
+/**
+ * Get User Profile
+ */
+const getProfile = asyncHandler(async (req, res) => {
+  const profile = await userService.getProfile(req.user);
+
   return ApiResponse.success(
     res,
     "Profile retrieved successfully",
-    req.user
+    profile
   );
-};
+});
 
-const getAdminDashboard = async (req, res) => {
+/**
+ * Get Admin Dashboard
+ */
+const getAdminDashboard = asyncHandler(async (req, res) => {
+  const dashboard = await userService.getAdminDashboard(req.user);
+
   return ApiResponse.success(
     res,
     "Welcome to the Admin Dashboard",
-    {
-      user: req.user,
-      statistics: {
-        totalPatients: 0,
-        totalDoctors: 0,
-        totalAppointments: 0,
-      },
-    }
+    dashboard
   );
-};
+});
 
 module.exports = {
   getProfile,

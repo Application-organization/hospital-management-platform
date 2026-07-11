@@ -1,5 +1,5 @@
 const Patient = require("../models/Patient");
-const AppError = require("../errors/AppError");
+const ApiError = require("../utils/ApiError");
 
 class PatientService {
   /**
@@ -11,7 +11,7 @@ class PatientService {
     });
 
     if (existingPatient) {
-      throw new AppError("Patient with this email already exists", 409);
+      throw new ApiError(409, "Patient with this email already exists");
     }
 
     return await Patient.create(patientData);
@@ -33,7 +33,7 @@ class PatientService {
     const patient = await Patient.findById(id);
 
     if (!patient || !patient.isActive) {
-      throw new AppError("Patient not found", 404);
+      throw new ApiError(404, "Patient not found");
     }
 
     return patient;
@@ -46,23 +46,33 @@ class PatientService {
     const patient = await Patient.findById(id);
 
     if (!patient || !patient.isActive) {
-      throw new AppError("Patient not found", 404);
+      throw new ApiError(404, "Patient not found");
     }
 
-    if (updateData.email && updateData.email !== patient.email) {
+    if (
+      updateData.email &&
+      updateData.email !== patient.email
+    ) {
       const emailExists = await Patient.findOne({
         email: updateData.email,
       });
 
       if (emailExists) {
-        throw new AppError("Patient with this email already exists", 409);
+        throw new ApiError(
+          409,
+          "Patient with this email already exists"
+        );
       }
     }
 
-    return await Patient.findByIdAndUpdate(id, updateData, {
-      new: true,
-      runValidators: true,
-    });
+    return await Patient.findByIdAndUpdate(
+      id,
+      updateData,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
   }
 
   /**
@@ -72,7 +82,7 @@ class PatientService {
     const patient = await Patient.findById(id);
 
     if (!patient || !patient.isActive) {
-      throw new AppError("Patient not found", 404);
+      throw new ApiError(404, "Patient not found");
     }
 
     patient.isActive = false;
