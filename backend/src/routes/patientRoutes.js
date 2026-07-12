@@ -13,11 +13,80 @@ const {
 
 const router = express.Router();
 
-/*
-|--------------------------------------------------------------------------
-| Create Patient
-|--------------------------------------------------------------------------
-*/
+/**
+ * @swagger
+ * tags:
+ *   name: Patients
+ *   description: Patient Management APIs
+ */
+
+/**
+ * @swagger
+ * /patients:
+ *   post:
+ *     summary: Create a new patient
+ *     tags: [Patients]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - firstName
+ *               - lastName
+ *               - email
+ *               - phone
+ *               - gender
+ *               - dateOfBirth
+ *               - bloodGroup
+ *               - address
+ *               - emergencyContactName
+ *               - emergencyContactPhone
+ *             properties:
+ *               firstName:
+ *                 type: string
+ *                 example: Emily
+ *               lastName:
+ *                 type: string
+ *                 example: Williams
+ *               email:
+ *                 type: string
+ *                 example: emily@example.com
+ *               phone:
+ *                 type: string
+ *                 example: "+60171234567"
+ *               gender:
+ *                 type: string
+ *                 example: female
+ *               dateOfBirth:
+ *                 type: string
+ *                 format: date
+ *                 example: "1994-08-15"
+ *               bloodGroup:
+ *                 type: string
+ *                 example: O+
+ *               address:
+ *                 type: string
+ *                 example: 25 Jalan Bukit Bintang, Kuala Lumpur
+ *               emergencyContactName:
+ *                 type: string
+ *                 example: David Williams
+ *               emergencyContactPhone:
+ *                 type: string
+ *                 example: "+60179876543"
+ *     responses:
+ *       201:
+ *         description: Patient created successfully
+ *       400:
+ *         description: Validation failed
+ *       401:
+ *         description: Unauthorized
+ *       409:
+ *         description: Patient already exists
+ */
 router.post(
   "/",
   authenticate,
@@ -27,11 +96,20 @@ router.post(
   patientController.createPatient
 );
 
-/*
-|--------------------------------------------------------------------------
-| Get All Patients
-|--------------------------------------------------------------------------
-*/
+/**
+ * @swagger
+ * /patients:
+ *   get:
+ *     summary: Get all patients
+ *     tags: [Patients]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Patients retrieved successfully
+ *       401:
+ *         description: Unauthorized
+ */
 router.get(
   "/",
   authenticate,
@@ -39,11 +117,27 @@ router.get(
   patientController.getAllPatients
 );
 
-/*
-|--------------------------------------------------------------------------
-| Get Patient By ID
-|--------------------------------------------------------------------------
-*/
+/**
+ * @swagger
+ * /patients/{id}:
+ *   get:
+ *     summary: Get patient by ID
+ *     tags: [Patients]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Patient ID
+ *     responses:
+ *       200:
+ *         description: Patient retrieved successfully
+ *       404:
+ *         description: Patient not found
+ */
 router.get(
   "/:id",
   authenticate,
@@ -51,11 +145,54 @@ router.get(
   patientController.getPatientById
 );
 
-/*
-|--------------------------------------------------------------------------
-| Update Patient
-|--------------------------------------------------------------------------
-*/
+/**
+ * @swagger
+ * /patients/{id}:
+ *   put:
+ *     summary: Update patient
+ *     tags: [Patients]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Patient ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               firstName:
+ *                 type: string
+ *               lastName:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               phone:
+ *                 type: string
+ *               gender:
+ *                 type: string
+ *               dateOfBirth:
+ *                 type: string
+ *               bloodGroup:
+ *                 type: string
+ *               address:
+ *                 type: string
+ *               emergencyContactName:
+ *                 type: string
+ *               emergencyContactPhone:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Patient updated successfully
+ *       404:
+ *         description: Patient not found
+ */
 router.put(
   "/:id",
   authenticate,
@@ -65,11 +202,27 @@ router.put(
   patientController.updatePatient
 );
 
-/*
-|--------------------------------------------------------------------------
-| Soft Delete Patient
-|--------------------------------------------------------------------------
-*/
+/**
+ * @swagger
+ * /patients/{id}:
+ *   delete:
+ *     summary: Soft delete patient
+ *     tags: [Patients]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Patient ID
+ *     responses:
+ *       200:
+ *         description: Patient deleted successfully
+ *       404:
+ *         description: Patient not found
+ */
 router.delete(
   "/:id",
   authenticate,

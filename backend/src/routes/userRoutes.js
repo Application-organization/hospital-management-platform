@@ -6,24 +6,49 @@ const userController = require("../controllers/userController");
 
 const router = express.Router();
 
-/*
-|--------------------------------------------------------------------------
-| User Profile
-|--------------------------------------------------------------------------
-*/
+/**
+ * @swagger
+ * tags:
+ *   name: Users
+ *   description: User Management APIs
+ */
 
+/**
+ * @swagger
+ * /users/profile:
+ *   get:
+ *     summary: Get authenticated user's profile
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Profile retrieved successfully
+ *       401:
+ *         description: Unauthorized
+ */
 router.get(
   "/profile",
   authenticate,
   userController.getProfile
 );
 
-/*
-|--------------------------------------------------------------------------
-| Admin Dashboard
-|--------------------------------------------------------------------------
-*/
-
+/**
+ * @swagger
+ * /users/admin/dashboard:
+ *   get:
+ *     summary: Get Admin Dashboard
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Admin dashboard retrieved successfully
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden - Admin access only
+ */
 router.get(
   "/admin/dashboard",
   authenticate,
