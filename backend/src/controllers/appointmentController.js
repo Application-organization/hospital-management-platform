@@ -1,5 +1,4 @@
 const appointmentService = require("../services/appointmentService");
-const ApiResponse = require("../utils/ApiResponse");
 
 class AppointmentController {
   /**
@@ -9,12 +8,11 @@ class AppointmentController {
     try {
       const appointment = await appointmentService.createAppointment(req.body);
 
-      return ApiResponse.success(
-        res,
-        "Appointment created successfully",
-        appointment,
-        201
-      );
+      res.status(201).json({
+        success: true,
+        message: "Appointment created successfully",
+        data: appointment,
+      });
     } catch (error) {
       next(error);
     }
@@ -27,11 +25,10 @@ class AppointmentController {
     try {
       const appointments = await appointmentService.getAllAppointments();
 
-      return ApiResponse.success(
-        res,
-        "Appointments retrieved successfully",
-        appointments
-      );
+      res.status(200).json({
+        success: true,
+        data: appointments,
+      });
     } catch (error) {
       next(error);
     }
@@ -46,31 +43,59 @@ class AppointmentController {
         req.params.id
       );
 
-      return ApiResponse.success(
-        res,
-        "Appointment retrieved successfully",
-        appointment
-      );
+      res.status(200).json({
+        success: true,
+        data: appointment,
+      });
     } catch (error) {
       next(error);
     }
   }
 
   /**
-   * Update Appointment
+   * Update Appointment Details
+   * Status updates are NOT allowed here.
    */
   async updateAppointment(req, res, next) {
     try {
+      // Create a copy of the request body
+      const updateData = { ...req.body };
+
+      // Prevent protected fields from being updated
+      delete updateData.status;
+      delete updateData.endTime;
+
       const appointment = await appointmentService.updateAppointment(
         req.params.id,
-        req.body
+        updateData
       );
 
-      return ApiResponse.success(
-        res,
-        "Appointment updated successfully",
-        appointment
-      );
+      res.status(200).json({
+        success: true,
+        message: "Appointment updated successfully",
+        data: appointment,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * Update Appointment Status
+   */
+  async updateAppointmentStatus(req, res, next) {
+    try {
+      const appointment =
+        await appointmentService.updateAppointmentStatus(
+          req.params.id,
+          req.body.status
+        );
+
+      res.status(200).json({
+        success: true,
+        message: "Appointment status updated successfully",
+        data: appointment,
+      });
     } catch (error) {
       next(error);
     }
@@ -83,11 +108,10 @@ class AppointmentController {
     try {
       await appointmentService.deleteAppointment(req.params.id);
 
-      return ApiResponse.success(
-        res,
-        "Appointment deleted successfully",
-        null
-      );
+      res.status(200).json({
+        success: true,
+        message: "Appointment deleted successfully",
+      });
     } catch (error) {
       next(error);
     }
