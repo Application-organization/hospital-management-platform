@@ -1,68 +1,97 @@
 const appointmentService = require("../services/appointmentService");
-const asyncHandler = require("../middleware/asyncHandler");
+const ApiResponse = require("../utils/ApiResponse");
 
-// Create Appointment
-const createAppointment = asyncHandler(async (req, res) => {
-    const appointment = await appointmentService.createAppointment(req.body);
+class AppointmentController {
+  /**
+   * Create Appointment
+   */
+  async createAppointment(req, res, next) {
+    try {
+      const appointment = await appointmentService.createAppointment(req.body);
 
-    res.status(201).json({
-        success: true,
-        message: "Appointment created successfully",
-        data: appointment,
-    });
-});
+      return ApiResponse.success(
+        res,
+        "Appointment created successfully",
+        appointment,
+        201
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
 
-// Get All Appointments
-const getAllAppointments = asyncHandler(async (req, res) => {
-    const appointments = await appointmentService.getAllAppointments();
+  /**
+   * Get All Appointments
+   */
+  async getAllAppointments(req, res, next) {
+    try {
+      const appointments = await appointmentService.getAllAppointments();
 
-    res.status(200).json({
-        success: true,
-        message: "Appointments retrieved successfully",
-        data: appointments,
-    });
-});
+      return ApiResponse.success(
+        res,
+        "Appointments retrieved successfully",
+        appointments
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
 
-// Get Appointment By ID
-const getAppointmentById = asyncHandler(async (req, res) => {
-    const appointment = await appointmentService.getAppointmentById(req.params.id);
+  /**
+   * Get Appointment By ID
+   */
+  async getAppointmentById(req, res, next) {
+    try {
+      const appointment = await appointmentService.getAppointmentById(
+        req.params.id
+      );
 
-    res.status(200).json({
-        success: true,
-        message: "Appointment retrieved successfully",
-        data: appointment,
-    });
-});
+      return ApiResponse.success(
+        res,
+        "Appointment retrieved successfully",
+        appointment
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
 
-// Update Appointment
-const updateAppointment = asyncHandler(async (req, res) => {
-    const appointment = await appointmentService.updateAppointment(
+  /**
+   * Update Appointment
+   */
+  async updateAppointment(req, res, next) {
+    try {
+      const appointment = await appointmentService.updateAppointment(
         req.params.id,
         req.body
-    );
+      );
 
-    res.status(200).json({
-        success: true,
-        message: "Appointment updated successfully",
-        data: appointment,
-    });
-});
+      return ApiResponse.success(
+        res,
+        "Appointment updated successfully",
+        appointment
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
 
-// Delete Appointment
-const deleteAppointment = asyncHandler(async (req, res) => {
-    await appointmentService.deleteAppointment(req.params.id);
+  /**
+   * Delete Appointment
+   */
+  async deleteAppointment(req, res, next) {
+    try {
+      await appointmentService.deleteAppointment(req.params.id);
 
-    res.status(200).json({
-        success: true,
-        message: "Appointment deleted successfully",
-        data: null,
-    });
-});
+      return ApiResponse.success(
+        res,
+        "Appointment deleted successfully",
+        null
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
+}
 
-module.exports = {
-    createAppointment,
-    getAllAppointments,
-    getAppointmentById,
-    updateAppointment,
-    deleteAppointment,
-};
+module.exports = new AppointmentController();

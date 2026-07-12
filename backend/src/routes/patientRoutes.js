@@ -2,14 +2,14 @@ const express = require("express");
 
 const authenticate = require("../middleware/authMiddleware");
 const authorize = require("../middleware/authorize");
-const validate = require("../middleware/validate");
+const validateRequest = require("../middleware/validateRequest");
 
 const patientController = require("../controllers/patientController");
 
 const {
-  createPatientSchema,
-  updatePatientSchema,
-} = require("../validators/patientValidator");
+  createPatientValidation,
+  updatePatientValidation,
+} = require("../validators/patientValidation");
 
 const router = express.Router();
 
@@ -20,9 +20,10 @@ const router = express.Router();
 */
 router.post(
   "/",
-  validate(createPatientSchema),
   authenticate,
   authorize("admin"),
+  createPatientValidation,
+  validateRequest,
   patientController.createPatient
 );
 
@@ -57,9 +58,10 @@ router.get(
 */
 router.put(
   "/:id",
-  validate(updatePatientSchema),
   authenticate,
   authorize("admin"),
+  updatePatientValidation,
+  validateRequest,
   patientController.updatePatient
 );
 

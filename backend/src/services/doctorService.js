@@ -1,129 +1,124 @@
 const Doctor = require("../models/Doctor");
-const ApiError = require("../utils/ApiError");
+const AppError = require("../errors/AppError");
 
-/**
- * Create Doctor
- */
-const createDoctor = async (doctorData) => {
-    // Check email uniqueness
-    const existingEmail = await Doctor.findOne({
-        email: doctorData.email,
+class DoctorService {
+  /**
+   * Create Doctor
+   */
+  async createDoctor(doctorData) {
+    const emailExists = await Doctor.findOne({
+      email: doctorData.email,
     });
 
-    if (existingEmail) {
-        throw new ApiError(409, "Doctor with this email already exists");
+    if (emailExists) {
+      throw new AppError(
+        "Doctor with this email already exists",
+        409
+      );
     }
 
-    // Check license uniqueness
-    const existingLicense = await Doctor.findOne({
-        licenseNumber: doctorData.licenseNumber,
+    const licenseExists = await Doctor.findOne({
+      licenseNumber: doctorData.licenseNumber,
     });
 
-    if (existingLicense) {
-        throw new ApiError(
-            409,
-            "Doctor with this license number already exists"
-        );
+    if (licenseExists) {
+      throw new AppError(
+        "License number already exists",
+        409
+      );
     }
 
     return await Doctor.create(doctorData);
-};
+  }
 
-/**
- * Get All Doctors
- */
-const getAllDoctors = async () => {
+  /**
+   * Get All Doctors
+   */
+  async getAllDoctors() {
     return await Doctor.find().sort({
-        createdAt: -1,
+      createdAt: -1,
     });
-};
+  }
 
-/**
- * Get Doctor By ID
- */
-const getDoctorById = async (id) => {
+  /**
+   * Get Doctor By ID
+   */
+  async getDoctorById(id) {
     const doctor = await Doctor.findById(id);
 
     if (!doctor) {
-        throw new ApiError(404, "Doctor not found");
+      throw new AppError("Doctor not found", 404);
     }
 
     return doctor;
-};
+  }
 
-/**
- * Update Doctor
- */
-const updateDoctor = async (id, doctorData) => {
+  /**
+   * Update Doctor
+   */
+  async updateDoctor(id, updateData) {
     const doctor = await Doctor.findById(id);
 
     if (!doctor) {
-        throw new ApiError(404, "Doctor not found");
+      throw new AppError("Doctor not found", 404);
     }
 
-    // Email uniqueness
     if (
-        doctorData.email &&
-        doctorData.email !== doctor.email
+      updateData.email &&
+      updateData.email !== doctor.email
     ) {
-        const existingEmail = await Doctor.findOne({
-            email: doctorData.email,
-        });
+      const emailExists = await Doctor.findOne({
+        email: updateData.email,
+      });
 
-        if (existingEmail) {
-            throw new ApiError(
-                409,
-                "Doctor with this email already exists"
-            );
-        }
+      if (emailExists) {
+        throw new AppError(
+          "Doctor with this email already exists",
+          409
+        );
+      }
     }
 
-    // License uniqueness
     if (
-        doctorData.licenseNumber &&
-        doctorData.licenseNumber !== doctor.licenseNumber
+      updateData.licenseNumber &&
+      updateData.licenseNumber !== doctor.licenseNumber
     ) {
-        const existingLicense = await Doctor.findOne({
-            licenseNumber: doctorData.licenseNumber,
-        });
+      const licenseExists = await Doctor.findOne({
+        licenseNumber: updateData.licenseNumber,
+      });
 
-        if (existingLicense) {
-            throw new ApiError(
-                409,
-                "Doctor with this license number already exists"
-            );
-        }
+      if (licenseExists) {
+        throw new AppError(
+          "License number already exists",
+          409
+        );
+      }
     }
 
     return await Doctor.findByIdAndUpdate(
-        id,
-        doctorData,
-        {
-            new: true,
-            runValidators: true,
-        }
+      id,
+      updateData,
+      {
+        new: true,
+        runValidators: true,
+      }
     );
-};
+  }
 
-/**
- * Delete Doctor
- */
-const deleteDoctor = async (id) => {
+  /**
+   * Delete Doctor
+   */
+  async deleteDoctor(id) {
     const doctor = await Doctor.findById(id);
 
     if (!doctor) {
-        throw new ApiError(404, "Doctor not found");
+      throw new AppError("Doctor not found", 404);
     }
 
     await doctor.deleteOne();
 
     return doctor;
-};
+  }
+}
 
-module.exports = {
-    createDoctor,
-    getAllDoctors,
-    getDoctorById,
-    updateDoctor,
-    deleteDoctor,
-};
+module.exports = new DoctorService();

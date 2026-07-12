@@ -1,29 +1,80 @@
 const express = require("express");
+
 const router = express.Router();
 
-const {
-    createAppointment,
-    getAllAppointments,
-    getAppointmentById,
-    updateAppointment,
-    deleteAppointment,
-} = require("../controllers/appointmentController");
+const appointmentController = require("../controllers/appointmentController");
 
 const authMiddleware = require("../middleware/authMiddleware");
+const authorize = require("../middleware/authorize");
+const validateRequest = require("../middleware/validateRequest");
 
-// Create Appointment
-router.post("/", authMiddleware, createAppointment);
+const {
+  createAppointmentValidation,
+  updateAppointmentValidation,
+} = require("../validators/appointmentValidation");
 
-// Get All Appointments
-router.get("/", authMiddleware, getAllAppointments);
+/*
+|--------------------------------------------------------------------------
+| Create Appointment
+|--------------------------------------------------------------------------
+*/
+router.post(
+  "/",
+  authMiddleware,
+  authorize("admin", "doctor"),
+  createAppointmentValidation,
+  validateRequest,
+  appointmentController.createAppointment
+);
 
-// Get Appointment By ID
-router.get("/:id", authMiddleware, getAppointmentById);
+/*
+|--------------------------------------------------------------------------
+| Get All Appointments
+|--------------------------------------------------------------------------
+*/
+router.get(
+  "/",
+  authMiddleware,
+  authorize("admin", "doctor"),
+  appointmentController.getAllAppointments
+);
 
-// Update Appointment
-router.put("/:id", authMiddleware, updateAppointment);
+/*
+|--------------------------------------------------------------------------
+| Get Appointment By ID
+|--------------------------------------------------------------------------
+*/
+router.get(
+  "/:id",
+  authMiddleware,
+  authorize("admin", "doctor"),
+  appointmentController.getAppointmentById
+);
 
-// Delete Appointment
-router.delete("/:id", authMiddleware, deleteAppointment);
+/*
+|--------------------------------------------------------------------------
+| Update Appointment
+|--------------------------------------------------------------------------
+*/
+router.put(
+  "/:id",
+  authMiddleware,
+  authorize("admin", "doctor"),
+  updateAppointmentValidation,
+  validateRequest,
+  appointmentController.updateAppointment
+);
+
+/*
+|--------------------------------------------------------------------------
+| Delete Appointment
+|--------------------------------------------------------------------------
+*/
+router.delete(
+  "/:id",
+  authMiddleware,
+  authorize("admin"),
+  appointmentController.deleteAppointment
+);
 
 module.exports = router;
