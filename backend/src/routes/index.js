@@ -8,6 +8,7 @@ const appointmentRoutes = require("./appointmentRoutes");
 const medicalRecordRoutes = require("./medicalRecordRoutes");
 const laboratoryTestRoutes = require("./laboratoryTestRoutes");
 const medicationRoutes = require("./medicationRoutes");
+const billingRoutes = require("./billingRoutes");
 
 const router = express.Router();
 
@@ -32,5 +33,7 @@ router.use("/medical-records", medicalRecordRoutes);
 router.use("/laboratory-tests", laboratoryTestRoutes);
 
 router.use("/medications", medicationRoutes);
+
+router.use("/billings", billingRoutes);
 
 module.exports = router;
