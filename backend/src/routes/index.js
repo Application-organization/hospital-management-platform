@@ -9,6 +9,9 @@ const medicalRecordRoutes = require("./medicalRecordRoutes");
 const laboratoryTestRoutes = require("./laboratoryTestRoutes");
 const medicationRoutes = require("./medicationRoutes");
 const billingRoutes = require("./billingRoutes");
+const wardRoutes = require("./wardRoutes");
+const bedRoutes = require("./bedRoutes");
+const admissionRoutes = require("./admissionRoutes");
 
 const router = express.Router();
 
@@ -35,5 +38,11 @@ router.use("/laboratory-tests", laboratoryTestRoutes);
 router.use("/medications", medicationRoutes);
 
 router.use("/billings", billingRoutes);
+
+router.use("/wards", wardRoutes);
+
+router.use("/beds", bedRoutes);
+
+router.use("/admissions", admissionRoutes);
 
 module.exports = router;

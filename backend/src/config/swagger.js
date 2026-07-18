@@ -25,28 +25,56 @@ const options = {
       },
     ],
 
-    tags: [
-      {
-        name: "Authentication",
-        description: "User Authentication APIs",
-      },
-      {
-        name: "Patients",
-        description: "Patient Management APIs",
-      },
-      {
-        name: "Doctors",
-        description: "Doctor Management APIs",
-      },
-      {
-        name: "Appointments",
-        description: "Appointment Management APIs",
-      },
-      {
-        name: "Users",
-        description: "User Profile & Dashboard APIs",
-      },
-    ],
+ tags: [
+  {
+    name: "Authentication",
+    description: "User Authentication APIs",
+  },
+  {
+    name: "Users",
+    description: "User Profile & Dashboard APIs",
+  },
+  {
+    name: "Patients",
+    description: "Patient Management APIs",
+  },
+  {
+    name: "Doctors",
+    description: "Doctor Management APIs",
+  },
+  {
+    name: "Appointments",
+    description: "Appointment Management APIs",
+  },
+  {
+    name: "Medical Records",
+    description: "Medical Record Management APIs",
+  },
+ {
+  name: "Laboratory Tests",
+  description: "Laboratory Test Management APIs",
+},
+  {
+    name: "Medications",
+    description: "Medication & Prescription APIs",
+  },
+  {
+    name: "Billing",
+    description: "Billing & Revenue Management APIs",
+  },
+  {
+    name: "Wards",
+    description: "Hospital Ward Management APIs",
+  },
+  {
+    name: "Beds",
+    description: "Hospital Bed Management APIs",
+  },
+  {
+    name: "Admissions",
+    description: "Patient Admission Management APIs",
+  },
+],
 
     components: {
       securitySchemes: {
