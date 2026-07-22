@@ -12,6 +12,8 @@ const billingRoutes = require("./billingRoutes");
 const wardRoutes = require("./wardRoutes");
 const bedRoutes = require("./bedRoutes");
 const admissionRoutes = require("./admissionRoutes");
+const dashboardRoutes = require("./dashboardRoutes");
+const analyticsRoutes = require("./analyticsRoutes");
 
 const router = express.Router();
 
@@ -44,5 +46,10 @@ router.use("/wards", wardRoutes);
 router.use("/beds", bedRoutes);
 
 router.use("/admissions", admissionRoutes);
+
+router.use("/dashboard", dashboardRoutes);
+
+router.use("/analytics", analyticsRoutes);
+
 
 module.exports = router;

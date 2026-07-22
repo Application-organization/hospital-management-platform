@@ -465,22 +465,132 @@ class AppointmentService {
 
 
 
-  /**
-   * Get All Appointments
-   */
-  async getAllAppointments(){
+/**
+ * Get All Appointments
+ */
+async getAllAppointments(query) {
 
-    return await Appointment.find()
+  const {
+
+    page = 1,
+
+    limit = 10,
+
+    search,
+
+    status,
+
+    doctor,
+
+    patient,
+
+    sortBy = "appointmentDate",
+
+    order = "asc"
+
+  } = query;
+
+
+  const filter = {};
+
+
+  if (status) {
+
+    filter.status = status;
+
+  }
+
+
+  if (doctor) {
+
+    filter.doctor = doctor;
+
+  }
+
+
+  if (patient) {
+
+    filter.patient = patient;
+
+  }
+
+
+  if (search) {
+
+    const patients = await Patient.find({
+      $or: [
+        {
+          firstName: {
+            $regex: search,
+            $options: "i",
+          },
+        },
+        {
+          lastName: {
+            $regex: search,
+            $options: "i",
+          },
+        },
+      ],
+    }).select("_id");
+
+
+    const patientIds = patients.map((p) => p._id);
+
+    filter.patient = { $in: patientIds };
+
+  }
+
+
+  const pageNumber = parseInt(page);
+
+  const pageSize = parseInt(limit);
+
+  const skip = (pageNumber - 1) * pageSize;
+
+
+  const totalRecords =
+    await Appointment.countDocuments(filter);
+
+
+  const appointments =
+    await Appointment.find(filter)
 
       .populate("patient")
 
       .populate("doctor")
 
       .sort({
-        appointmentDate:1
-      });
+        [sortBy]:
+          order === "desc" ? -1 : 1,
+      })
 
-  }
+      .skip(skip)
+
+      .limit(pageSize);
+
+
+  return {
+
+    appointments,
+
+    pagination: {
+
+      totalRecords,
+
+      totalPages: Math.ceil(
+        totalRecords / pageSize
+      ),
+
+      currentPage: pageNumber,
+
+      pageSize,
+
+    },
+
+  };
+
+}
 
 
 

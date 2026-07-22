@@ -1,5 +1,6 @@
 const Patient = require("../models/Patient");
 const ApiError = require("../utils/ApiError");
+const APIFeatures = require("../utils/apiFeatures");
 
 class PatientService {
   /**
@@ -11,7 +12,10 @@ class PatientService {
     });
 
     if (existingPatient) {
-      throw new ApiError(409, "Patient with this email already exists");
+      throw new ApiError(
+        409,
+        "Patient with this email already exists"
+      );
     }
 
     return await Patient.create(patientData);
@@ -20,10 +24,49 @@ class PatientService {
   /**
    * Get All Patients
    */
-  async getAllPatients() {
-    return await Patient.find({ isActive: true }).sort({
-      createdAt: -1,
-    });
+  async getAllPatients(queryParams) {
+    const features = new APIFeatures(
+      Patient.find({ isActive: true }),
+      queryParams
+    )
+      .filter()
+      .search([
+        "firstName",
+        "lastName",
+        "email",
+        "phone",
+      ])
+      .sort()
+      .paginate();
+
+    const patients = await features.query;
+
+    // Build the count query using the same filters
+    const countQuery = {
+      isActive: true,
+      ...features.filterQuery,
+    };
+
+    const totalPatients =
+      await Patient.countDocuments(countQuery);
+
+    const page = Number(queryParams.page) || 1;
+
+    const limit = Number(queryParams.limit) || 10;
+
+    const totalPages = Math.ceil(
+      totalPatients / limit
+    );
+
+    return {
+      patients,
+      pagination: {
+        totalRecords: totalPatients,
+        totalPages,
+        currentPage: page,
+        pageSize: limit,
+      },
+    };
   }
 
   /**
@@ -33,7 +76,10 @@ class PatientService {
     const patient = await Patient.findById(id);
 
     if (!patient || !patient.isActive) {
-      throw new ApiError(404, "Patient not found");
+      throw new ApiError(
+        404,
+        "Patient not found"
+      );
     }
 
     return patient;
@@ -46,7 +92,10 @@ class PatientService {
     const patient = await Patient.findById(id);
 
     if (!patient || !patient.isActive) {
-      throw new ApiError(404, "Patient not found");
+      throw new ApiError(
+        404,
+        "Patient not found"
+      );
     }
 
     if (
@@ -82,7 +131,10 @@ class PatientService {
     const patient = await Patient.findById(id);
 
     if (!patient || !patient.isActive) {
-      throw new ApiError(404, "Patient not found");
+      throw new ApiError(
+        404,
+        "Patient not found"
+      );
     }
 
     patient.isActive = false;

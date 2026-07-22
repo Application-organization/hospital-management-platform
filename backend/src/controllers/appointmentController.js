@@ -1,4 +1,5 @@
 const appointmentService = require("../services/appointmentService");
+const ApiResponse = require("../utils/ApiResponse");
 
 class AppointmentController {
   /**
@@ -18,21 +19,24 @@ class AppointmentController {
     }
   }
 
-  /**
-   * Get All Appointments
-   */
-  async getAllAppointments(req, res, next) {
-    try {
-      const appointments = await appointmentService.getAllAppointments();
+/**
+ * Get All Appointments
+ */
+async getAllAppointments(req, res, next) {
+  try {
+    const result = await appointmentService.getAllAppointments(
+      req.query
+    );
 
-      res.status(200).json({
-        success: true,
-        data: appointments,
-      });
-    } catch (error) {
-      next(error);
-    }
+    return ApiResponse.success(
+      res,
+      "Appointments retrieved successfully",
+      result
+    );
+  } catch (error) {
+    next(error);
   }
+}
 
   /**
    * Get Appointment By ID

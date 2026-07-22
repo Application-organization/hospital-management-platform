@@ -1,5 +1,6 @@
 const Doctor = require("../models/Doctor");
 const AppError = require("../errors/AppError");
+const APIFeatures = require("../utils/apiFeatures");
 
 class DoctorService {
   /**
@@ -34,10 +35,39 @@ class DoctorService {
   /**
    * Get All Doctors
    */
-  async getAllDoctors() {
-    return await Doctor.find().sort({
-      createdAt: -1,
-    });
+  async getAllDoctors(queryParams) {
+    const features = new APIFeatures(
+      Doctor.find(),
+      queryParams
+    )
+      .filter()
+      .search([
+        "name",
+        "email",
+        "phone",
+        "licenseNumber",
+      ])
+      .sort()
+      .paginate();
+
+    const doctors = await features.query;
+
+    const totalDoctors = await Doctor.countDocuments(
+      features.filterQuery
+    );
+
+    const page = Number(queryParams.page) || 1;
+    const limit = Number(queryParams.limit) || 10;
+
+    return {
+      doctors,
+      pagination: {
+        totalRecords: totalDoctors,
+        totalPages: Math.ceil(totalDoctors / limit),
+        currentPage: page,
+        pageSize: limit,
+      },
+    };
   }
 
   /**

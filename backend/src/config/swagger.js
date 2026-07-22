@@ -74,6 +74,10 @@ const options = {
     name: "Admissions",
     description: "Patient Admission Management APIs",
   },
+  {
+  name: "Analytics",
+  description: "Hospital Analytics & Reporting APIs",
+},
 ],
 
     components: {

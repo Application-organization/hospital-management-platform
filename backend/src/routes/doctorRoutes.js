@@ -1,10 +1,8 @@
 const express = require("express");
 
-const router = express.Router();
-
 const doctorController = require("../controllers/doctorController");
 
-const authMiddleware = require("../middleware/authMiddleware");
+const authenticate = require("../middleware/authMiddleware");
 const authorize = require("../middleware/authorize");
 const validateRequest = require("../middleware/validateRequest");
 
@@ -12,6 +10,8 @@ const {
   createDoctorValidation,
   updateDoctorValidation,
 } = require("../validators/doctorValidation");
+
+const router = express.Router();
 
 /**
  * @swagger
@@ -25,6 +25,7 @@ const {
  * /doctors:
  *   post:
  *     summary: Create a new doctor
+ *     description: Create a new doctor in the hospital system.
  *     tags: [Doctors]
  *     security:
  *       - bearerAuth: []
@@ -45,41 +46,46 @@ const {
  *             properties:
  *               name:
  *                 type: string
- *                 example: Dr. Jennifer Smith
+ *                 example: Dr. James Wilson
  *               email:
  *                 type: string
- *                 example: jennifer.smith@hospital.com
+ *                 format: email
+ *                 example: james.wilson@example.com
  *               phone:
  *                 type: string
- *                 example: "+60195556677"
+ *                 example: 08012345678
  *               department:
  *                 type: string
- *                 example: Orthopedics
+ *                 example: Cardiology
  *               specialization:
  *                 type: string
- *                 example: Orthopedic Surgeon
+ *                 example: Cardiologist
  *               experience:
  *                 type: integer
- *                 example: 11
+ *                 example: 8
  *               licenseNumber:
  *                 type: string
- *                 example: MED-2026-002
+ *                 example: MED-2026-100
  *               status:
  *                 type: string
+ *                 enum:
+ *                   - Active
+ *                   - On Leave
+ *                   - Inactive
  *                 example: Active
  *     responses:
  *       201:
  *         description: Doctor created successfully
  *       400:
- *         description: Validation failed
+ *         description: Validation error
  *       401:
  *         description: Unauthorized
- *       409:
- *         description: Doctor already exists
+ *       403:
+ *         description: Forbidden
  */
 router.post(
   "/",
-  authMiddleware,
+  authenticate,
   authorize("admin"),
   createDoctorValidation,
   validateRequest,
@@ -91,9 +97,64 @@ router.post(
  * /doctors:
  *   get:
  *     summary: Get all doctors
+ *     description: Retrieve doctors with pagination, searching, filtering and sorting.
  *     tags: [Doctors]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number
+ *
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Number of doctors per page
+ *
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search by doctor name or email
+ *
+ *       - in: query
+ *         name: department
+ *         schema:
+ *           type: string
+ *         description: Filter by department
+ *
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum:
+ *             - Active
+ *             - Inactive
+ *             - On Leave
+ *         description: Filter by doctor status
+ *
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           default: createdAt
+ *         description: Field used for sorting
+ *
+ *       - in: query
+ *         name: order
+ *         schema:
+ *           type: string
+ *           enum:
+ *             - asc
+ *             - desc
+ *           default: desc
+ *         description: Sort order
+ *
  *     responses:
  *       200:
  *         description: Doctors retrieved successfully
@@ -102,8 +163,7 @@ router.post(
  */
 router.get(
   "/",
-  authMiddleware,
-  authorize("admin", "doctor"),
+  authenticate,
   doctorController.getAllDoctors
 );
 
@@ -121,17 +181,18 @@ router.get(
  *         required: true
  *         schema:
  *           type: string
- *         description: Doctor ID
+ *         description: Doctor MongoDB ID
  *     responses:
  *       200:
  *         description: Doctor retrieved successfully
+ *       401:
+ *         description: Unauthorized
  *       404:
  *         description: Doctor not found
  */
 router.get(
   "/:id",
-  authMiddleware,
-  authorize("admin", "doctor"),
+  authenticate,
   doctorController.getDoctorById
 );
 
@@ -149,7 +210,7 @@ router.get(
  *         required: true
  *         schema:
  *           type: string
- *         description: Doctor ID
+ *         description: Doctor MongoDB ID
  *     requestBody:
  *       required: true
  *       content:
@@ -159,29 +220,47 @@ router.get(
  *             properties:
  *               name:
  *                 type: string
+ *                 example: Dr. James Wilson
  *               email:
  *                 type: string
+ *                 format: email
+ *                 example: james.wilson@example.com
  *               phone:
  *                 type: string
+ *                 example: 08012345678
  *               department:
  *                 type: string
+ *                 example: Cardiology
  *               specialization:
  *                 type: string
+ *                 example: Cardiologist
  *               experience:
  *                 type: integer
+ *                 example: 10
  *               licenseNumber:
  *                 type: string
+ *                 example: MED-2026-100
  *               status:
  *                 type: string
+ *                 enum:
+ *                   - Active
+ *                   - On Leave
+ *                   - Inactive
  *     responses:
  *       200:
  *         description: Doctor updated successfully
+ *       400:
+ *         description: Validation error
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
  *       404:
  *         description: Doctor not found
  */
 router.put(
   "/:id",
-  authMiddleware,
+  authenticate,
   authorize("admin"),
   updateDoctorValidation,
   validateRequest,
@@ -202,16 +281,20 @@ router.put(
  *         required: true
  *         schema:
  *           type: string
- *         description: Doctor ID
+ *         description: Doctor MongoDB ID
  *     responses:
  *       200:
  *         description: Doctor deleted successfully
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
  *       404:
  *         description: Doctor not found
  */
 router.delete(
   "/:id",
-  authMiddleware,
+  authenticate,
   authorize("admin"),
   doctorController.deleteDoctor
 );

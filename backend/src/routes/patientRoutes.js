@@ -101,9 +101,58 @@ router.post(
  * /patients:
  *   get:
  *     summary: Get all patients
+ *     description: Retrieve patients with pagination, searching, filtering and sorting.
  *     tags: [Patients]
  *     security:
  *       - bearerAuth: []
+ *
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number
+ *
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Number of patients per page
+ *
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search by first name, last name or email
+ *
+ *       - in: query
+ *         name: gender
+ *         schema:
+ *           type: string
+ *           enum:
+ *             - male
+ *             - female
+ *         description: Filter patients by gender
+ *
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           default: createdAt
+ *         description: Field used for sorting
+ *
+ *       - in: query
+ *         name: order
+ *         schema:
+ *           type: string
+ *           enum:
+ *             - asc
+ *             - desc
+ *           default: desc
+ *         description: Sort order
+ *
  *     responses:
  *       200:
  *         description: Patients retrieved successfully

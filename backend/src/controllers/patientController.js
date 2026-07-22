@@ -21,7 +21,9 @@ class PatientController {
    * Get All Patients
    */
   getAllPatients = asyncHandler(async (req, res) => {
-    const patients = await patientService.getAllPatients();
+    const patients = await patientService.getAllPatients(
+      req.query
+    );
 
     return ApiResponse.success(
       res,
@@ -34,7 +36,9 @@ class PatientController {
    * Get Patient By ID
    */
   getPatientById = asyncHandler(async (req, res) => {
-    const patient = await patientService.getPatientById(req.params.id);
+    const patient = await patientService.getPatientById(
+      req.params.id
+    );
 
     return ApiResponse.success(
       res,

@@ -25,7 +25,7 @@ class DoctorController {
    */
   async getAllDoctors(req, res, next) {
     try {
-      const doctors = await doctorService.getAllDoctors();
+      const doctors = await doctorService.getAllDoctors(req.query);
 
       return ApiResponse.success(
         res,
