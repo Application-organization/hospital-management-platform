@@ -14,6 +14,7 @@ const bedRoutes = require("./bedRoutes");
 const admissionRoutes = require("./admissionRoutes");
 const dashboardRoutes = require("./dashboardRoutes");
 const analyticsRoutes = require("./analyticsRoutes");
+const healthRoutes = require("./healthRoutes");
 
 const router = express.Router();
 
@@ -50,6 +51,8 @@ router.use("/admissions", admissionRoutes);
 router.use("/dashboard", dashboardRoutes);
 
 router.use("/analytics", analyticsRoutes);
+
+router.use("/health", healthRoutes);
 
 
 module.exports = router;
