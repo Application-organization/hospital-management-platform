@@ -38,7 +38,7 @@ const authenticate = async (req, res, next) => {
     req.user = user;
 
     next();
-  } catch (error) {
+  } catch {
     return ApiResponse.error(
       res,
       "Invalid or expired authentication token",

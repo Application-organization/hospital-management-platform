@@ -1,5 +1,4 @@
 const Ward = require("../../../src/models/Ward");
-const ApiError = require("../../../src/utils/ApiError");
 const wardService = require("../../../src/services/wardService");
 
 jest.mock("../../../src/models/Ward");

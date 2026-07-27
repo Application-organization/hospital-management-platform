@@ -10,7 +10,6 @@ const validateRequest = require("../middleware/validateRequest");
 
 const {
   createLaboratoryTestValidation,
-  updateLaboratoryTestValidation,
 } = require("../validators/laboratoryTestValidator");
 
 /**

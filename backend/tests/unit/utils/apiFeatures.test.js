@@ -64,10 +64,10 @@ describe("APIFeatures", () => {
         search: "john",
       };
 
-      const features = new APIFeatures(
-        query,
-        queryString
-      ).search([
+  new APIFeatures(
+  query,
+  queryString
+).search([
         "firstName",
         "lastName",
         "email",

@@ -2,7 +2,6 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const User = require("../../../src/models/User");
-const ApiError = require("../../../src/utils/ApiError");
 const env = require("../../../src/config/env");
 
 const {

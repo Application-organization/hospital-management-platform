@@ -178,57 +178,6 @@ class MedicalRecordService {
 
   }
 
-    /**
-   * Create Medical Record
-   */
-  async createMedicalRecord(
-    medicalRecordData
-  ) {
-
-    await this.validatePatient(
-      medicalRecordData.patient
-    );
-
-    await this.validateDoctor(
-      medicalRecordData.doctor
-    );
-
-    const visitDate =
-      medicalRecordData.visitDate ||
-      new Date();
-
-    this.validateFollowUpDate(
-      visitDate,
-      medicalRecordData.followUpDate
-    );
-
-    if (
-      medicalRecordData.vitalSigns &&
-      medicalRecordData.vitalSigns.weight &&
-      medicalRecordData.vitalSigns.height
-    ) {
-
-      medicalRecordData.vitalSigns.bmi =
-        this.calculateBMI(
-          medicalRecordData.vitalSigns.weight,
-          medicalRecordData.vitalSigns.height
-        );
-
-    }
-
-    const medicalRecord =
-      await MedicalRecord.create(
-        medicalRecordData
-      );
-
-    return await MedicalRecord.findById(
-      medicalRecord._id
-    )
-      .populate("patient")
-      .populate("doctor");
-
-  }
-
 
   /**
    * Get All Medical Records
@@ -416,7 +365,8 @@ class MedicalRecordService {
 
   }
 
-    /**
+
+  /**
    * Update Medical Record
    */
   async updateMedicalRecord(
@@ -653,6 +603,7 @@ class MedicalRecordService {
 
   }
 
-  }
+}
+
 
 module.exports = new MedicalRecordService();

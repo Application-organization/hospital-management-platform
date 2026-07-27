@@ -301,6 +301,150 @@ class MedicationService {
 
     /**
    * ===========================================
+   * UPDATE MEDICATION
+   * ===========================================
+   */
+  async updateMedication(id, data) {
+
+    const medication =
+      await Medication.findById(id);
+
+    if (!medication) {
+
+      throw new ApiError(
+        "Medication not found",
+        404
+      );
+
+    }
+
+    if (data.patient) {
+
+      const patient =
+        await Patient.findById(data.patient);
+
+      if (!patient) {
+
+        throw new ApiError(
+          "Patient not found",
+          404
+        );
+
+      }
+
+    }
+
+    if (data.doctor) {
+
+      const doctor =
+        await Doctor.findById(data.doctor);
+
+      if (!doctor) {
+
+        throw new ApiError(
+          "Doctor not found",
+          404
+        );
+
+      }
+
+    }
+
+    if (data.medicalRecord) {
+
+      const medicalRecord =
+        await MedicalRecord.findById(
+          data.medicalRecord
+        );
+
+      if (!medicalRecord) {
+
+        throw new ApiError(
+          "Medical record not found",
+          404
+        );
+
+      }
+
+    }
+
+    const updatedMedication =
+      await Medication.findByIdAndUpdate(
+        id,
+        data,
+        {
+          new: true,
+          runValidators: true,
+        }
+      )
+        .populate("patient")
+        .populate("doctor")
+        .populate("medicalRecord");
+
+    return updatedMedication;
+
+  }
+
+  /**
+   * ===========================================
+   * UPDATE MEDICATION STATUS
+   * ===========================================
+   */
+  async updateMedicationStatus(
+    id,
+    status
+  ) {
+
+    const medication =
+      await Medication.findById(id);
+
+    if (!medication) {
+
+      throw new ApiError(
+        "Medication not found",
+        404
+      );
+
+    }
+
+    medication.status = status;
+
+    await medication.save();
+
+    return await Medication.findById(id)
+      .populate("patient")
+      .populate("doctor")
+      .populate("medicalRecord");
+
+  }
+
+  /**
+   * ===========================================
+   * DELETE MEDICATION
+   * ===========================================
+   */
+  async deleteMedication(id) {
+
+    const medication =
+      await Medication.findById(id);
+
+    if (!medication) {
+
+      throw new ApiError(
+        "Medication not found",
+        404
+      );
+
+    }
+
+    await Medication.findByIdAndDelete(id);
+
+    return true;
+
+  }
+
+    /**
+   * ===========================================
    * GET MEDICATION STATISTICS
    * ===========================================
    */

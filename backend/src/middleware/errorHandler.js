@@ -3,7 +3,7 @@ const ApiResponse = require("../utils/ApiResponse");
 /**
  * Handles requests to routes that don't exist.
  */
-const notFoundHandler = (req, res, next) => {
+const notFoundHandler = (req, res) => {
   return ApiResponse.error(
     res,
     `Route ${req.originalUrl} not found`,
@@ -14,14 +14,14 @@ const notFoundHandler = (req, res, next) => {
 /**
  * Global error handling middleware.
  */
-const errorHandler = (err, req, res, next) => {
-  console.error(err);
+const errorHandler = (error, req, res) => {
+  console.error(error);
 
-  const statusCode = err.statusCode || 500;
+  const statusCode = error.statusCode || 500;
 
   return ApiResponse.error(
     res,
-    err.message || "Internal Server Error",
+    error.message || "Internal Server Error",
     statusCode
   );
 };
